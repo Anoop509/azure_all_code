@@ -122,9 +122,8 @@ stages:
         steps:
         - task: ManualValidation@1
           inputs:
-            notifyUsers: 'anoopkushwaha509@gmail.com'
-            approvers: 'anoopkushwaha509@gmail.com'
             instructions: 'check and approve'
+            onTimeout: 'resume'
 
   - stage: stage5
     displayName: terraformApply
