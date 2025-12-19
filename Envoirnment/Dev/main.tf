@@ -55,16 +55,16 @@ module "kv" {
 
 }
 
-module "sqlserver" {
-  depends_on = [ module.kv, module.rg ]
-  source = "../../Module/azurerm_sql_server"
-  sql_servers = var.sql_servers
+# module "sqlserver" {
+#   depends_on = [ module.kv, module.rg ]
+#   source = "../../Module/azurerm_sql_server"
+#   sql_servers = var.sql_servers
   
-}
+# }
 
-module "db" {
-  depends_on = [ module.rg, module.sqlserver ]
-  source = "../../Module/azurerm_sql_database"
-  sql_databases = var.sql_databases
+# module "db" {
+#   depends_on = [ module.rg, module.sqlserver ]
+#   source = "../../Module/azurerm_sql_database"
+#   sql_databases = var.sql_databases
   
-}
+# }
