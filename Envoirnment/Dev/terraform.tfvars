@@ -1,11 +1,11 @@
 # resoure group
 rgs = {
   "rg1" = {
-    rg_name    = "anoopku1122"
+    rg_name    = "anoopkush1122"
     location   = "Korea Central"
     managed_by = "terraform"
     tags = {
-      owner       = "anoopku"
+      owner       = "anoopkush"
       team        = "devopsg2"
       enviornment = "dev"
     }
@@ -15,8 +15,8 @@ rgs = {
 
 storage_account = {
   "stg1" = {
-    name                     = "anoopkustg1234"
-    resource_group_name      = "anoopku1122"
+    name                     = "anoopkushstg1234"
+    resource_group_name      = "anoopkush1122"
     location                 = "Korea Central"
     account_tier             = "Standard"
     account_replication_type = "LRS"
@@ -27,8 +27,8 @@ storage_account = {
 # Vnet
 vnet = {
   "vnet1" = {
-    vnet_name           = "anoopkuvnet"
-    resource_group_name = "anoopku1122"
+    vnet_name           = "anoopkushvnet"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     address_space       = ["10.0.0.0/16"]
   }
@@ -38,14 +38,14 @@ vnet = {
 subnets = {
   "sub01" = {
     name                 = "frontend_subnet"
-    resource_group_name  = "anoopku1122"
-    virtual_network_name = "anoopkuvnet"
+    resource_group_name  = "anoopkush1122"
+    virtual_network_name = "anoopkushvnet"
     address_prefixes     = ["10.0.1.0/24"]
   }
   "sub02" = {
     name                 = "backend_subnet"
-    resource_group_name  = "anoopku1122"
-    virtual_network_name = "anoopkuvnet"
+    resource_group_name  = "anoopkush1122"
+    virtual_network_name = "anoopkushvnet"
     address_prefixes     = ["10.0.2.0/24"]
   }
 }
@@ -54,11 +54,11 @@ subnets = {
 nerwork_security_group = {
   nsg1 = {
     nsg_name            = "frontend_nsg"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     security_rule = {
       rule1 = {
-        name                       = "anoopku11"
+        name                       = "anoopkush11"
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
@@ -73,11 +73,11 @@ nerwork_security_group = {
 
   nsg2 = {
     nsg_name            = "backend_nsg"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     security_rule = {
       rule1 = {
-        name                       = "anoopku22"
+        name                       = "anoopkush22"
         priority                   = 100
         direction                  = "Inbound"
         access                     = "Allow"
@@ -95,14 +95,14 @@ nerwork_security_group = {
 public_ip = {
   "pip1" = {
     name                = "frontend_pip"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     allocation_method   = "Static"
   }
 
   "pip2" = {
     name                = "backend_pip"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     allocation_method   = "Static"
   }
@@ -112,13 +112,13 @@ public_ip = {
 network_interface = {
   "nic1" = {
     name                = "frontend_nic"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     ip_configuration = [{
       name                          = "frontend_ip_config"
       private_ip_address_allocation = "Dynamic"
       subnet_name                   = "frontend_subnet"
-      virtual_network_name          = "anoopkuvnet"
+      virtual_network_name          = "anoopkushvnet"
       pip_name                      = "frontend_pip"
 
     }]
@@ -126,13 +126,13 @@ network_interface = {
 
   "nic2" = {
     name                = "backend_nic"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     ip_configuration = [{
       name                          = "backend_ip_config"
       private_ip_address_allocation = "Dynamic"
       subnet_name                   = "backend_subnet"
-      virtual_network_name          = "anoopkuvnet"
+      virtual_network_name          = "anoopkushvnet"
       pip_name                      = "backend_pip"
 
     }]
@@ -142,14 +142,14 @@ network_interface = {
 vm = {
   vm1 = {
     name                = "frontendvm"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     # admin_username                  = "adminuser"
-    # admin_password                  = "anoopku@123456789"
+    # admin_password                  = "anoopkush@123456789"
     disable_password_authentication = "false"
     size                            = "Standard_D2s_v3"
     nic_name                        = "frontend_nic"
-    kv_name                         = "anoopkuNeww01"
+    kv_name                         = "anoopkushNeww01"
     secret_name                     = "vmuser"
     secret_password                 = "vmpassword"
 
@@ -168,14 +168,14 @@ vm = {
   }
   vm2 = {
     name                = "backendvm"
-    resource_group_name = "anoopku1122"
+    resource_group_name = "anoopkush1122"
     location            = "Korea Central"
     # admin_username                  = "adminuser"
-    # admin_password                  = "anoopku@123456789"
+    # admin_password                  = "anoopkush@123456789"
     disable_password_authentication = "false"
     size                            = "Standard_D2s_v3"
     nic_name                        = "backend_nic"
-    kv_name                         = "anoopkuNeww01"
+    kv_name                         = "anoopkushNeww01"
     secret_name                     = "vmuser"
     secret_password                 = "vmpassword"
 
@@ -195,8 +195,8 @@ vm = {
 
 keyvault = {
   "kv1" = {
-    kv_name                     = "anoopkuNeww01"
-    resource_group_name         = "anoopku1122"
+    kv_name                     = "anoopkushNeww01"
+    resource_group_name         = "anoopkush1122"
     location                    = "Korea Central"
     enabled_for_disk_encryption = true
     sku_name                    = "standard"
@@ -213,15 +213,15 @@ keyvault = {
 
 sql_servers = {
   "server1" = {
-    server_name           = "anoopkuserver02"
-    resource_group_name   = "anoopku1122"
+    server_name           = "anoopkushserver02"
+    resource_group_name   = "anoopkush1122"
     location              = "Korea Central"
     version               = "12.0"
     secret_name           = "vmuser"
     secret_password       = "vmpassword"
     secret_user_value     = "sqladminuser"
     secret_password_value = "SqlPassword@12345"
-    kv_name               = "anoopkuNeww01"
+    kv_name               = "anoopkushNeww01"
 
 
   }
@@ -229,9 +229,9 @@ sql_servers = {
 
 sql_databases = {
   "db1" = {
-    databse_name        = "anoopkudb11"
-    server_name         = "anoopkuserver02"
-    resource_group_name = "anoopku1122"
+    databse_name        = "anoopkushdb11"
+    server_name         = "anoopkushserver02"
+    resource_group_name = "anoopkush1122"
 
   }
 }
