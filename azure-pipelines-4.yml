@@ -7,9 +7,11 @@ pool: pipepool
 
 variables:
   TF_DIR: $(System.DefaultWorkingDirectory)/Envoirnment/Dev
-  TF_STATE: anoop-clean.tfstate
+  TF_STATE: anoop-final.tfstate
 
 stages:
+
+# ================= STAGE 1 =================
 - stage: validate
   displayName: Terraform Validate
   jobs:
@@ -17,18 +19,23 @@ stages:
     displayName: fmt_and_validate
     steps:
     - task: TerraformInstaller@1
+      displayName: Install Terraform
       inputs:
         terraformVersion: 'latest'
 
     - script: terraform init -backend=false
+      displayName: Init (no backend)
       workingDirectory: $(TF_DIR)
 
     - script: terraform fmt -recursive
+      displayName: Terraform fmt
       workingDirectory: $(TF_DIR)
 
     - script: terraform validate
+      displayName: Terraform validate
       workingDirectory: $(TF_DIR)
 
+# ================= STAGE 2 =================
 - stage: plan
   displayName: Terraform Plan
   dependsOn: validate
@@ -37,10 +44,11 @@ stages:
     displayName: terraform_plan
     steps:
     - task: TerraformTask@5
-      displayName: terraform_init
+      displayName: Terraform init (backend)
       inputs:
         provider: azurerm
         command: init
+        commandOptions: '-reconfigure'
         workingDirectory: $(TF_DIR)
         backendServiceArm: pipeline_new_infra
         backendAzureRmResourceGroupName: allIndiarg
@@ -49,14 +57,15 @@ stages:
         backendAzureRmKey: $(TF_STATE)
 
     - task: TerraformTask@5
-      displayName: terraform_plan
+      displayName: Terraform plan (NO LOCK)
       inputs:
         provider: azurerm
         command: plan
-        commandOptions: -refresh=false -parallelism=5
+        commandOptions: '-refresh=false -parallelism=5 -lock=false'
         workingDirectory: $(TF_DIR)
         environmentServiceNameAzureRM: pipeline_new_infra
 
+# ================= STAGE 3 =================
 - stage: approval
   displayName: Manual Approval
   dependsOn: plan
@@ -69,6 +78,7 @@ stages:
         notifyUsers: anoopkushwaha509@gmail.com
         instructions: Approve Terraform Apply
 
+# ================= STAGE 4 =================
 - stage: apply
   displayName: Terraform Apply
   dependsOn: approval
@@ -77,10 +87,11 @@ stages:
     displayName: terraform_apply
     steps:
     - task: TerraformTask@5
-      displayName: terraform_init
+      displayName: Terraform init (backend)
       inputs:
         provider: azurerm
         command: init
+        commandOptions: '-reconfigure'
         workingDirectory: $(TF_DIR)
         backendServiceArm: pipeline_new_infra
         backendAzureRmResourceGroupName: allIndiarg
@@ -89,10 +100,10 @@ stages:
         backendAzureRmKey: $(TF_STATE)
 
     - task: TerraformTask@5
-      displayName: terraform_apply
+      displayName: Terraform apply
       inputs:
         provider: azurerm
         command: apply
-        commandOptions: -auto-approve
+        commandOptions: '-auto-approve'
         workingDirectory: $(TF_DIR)
         environmentServiceNameAzureRM: pipeline_new_infra
