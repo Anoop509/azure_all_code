@@ -19,8 +19,12 @@ stages:
     - script: terraform fmt -recursive
       workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
 
+    - script: terraform init -backend=false
+      workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+
     - script: terraform validate
       workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+
 
 # ---------------- STAGE 2 ----------------
 - stage: plan
