@@ -1,0 +1,46 @@
+trigger:
+  branches:
+    include:
+      - none
+
+pool: pipepool
+
+variables:
+  TF_DIR: $(System.DefaultWorkingDirectory)/Envoirnment/Dev
+  TF_STATE: anoop-init-apply.tfstate
+
+stages:
+- stage: apply
+  displayName: Terraform Init & Apply
+  jobs:
+  - job: apply
+    steps:
+    - task: TerraformInstaller@1
+      displayName: Install Terraform
+      inputs:
+        terraformVersion: 'latest'
+
+    - task: TerraformTask@5
+      displayName: terraform init
+      inputs:
+        provider: azurerm
+        command: init
+        commandOptions: '-reconfigure -input=false'
+        workingDirectory: $(TF_DIR)
+        backendServiceArm: pipeline_new_infra
+        backendAzureRmResourceGroupName: allIndiarg
+        backendAzureRmStorageAccountName: allindiasa
+        backendAzureRmContainerName: kuchbhicontainer
+        backendAzureRmKey: $(TF_STATE)
+
+    - task: TerraformTask@5
+      displayName: terraform apply
+      inputs:
+        provider: azurerm
+        command: apply
+        workingDirectory: $(TF_DIR)
+        environmentServiceNameAzureRM: pipeline_new_infra
+        commandOptions: >
+          -auto-approve
+          -input=false
+          -var-file=terraform.tfvars
