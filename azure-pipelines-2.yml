@@ -102,14 +102,13 @@ stages:
             backendAzureRmResourceGroupName: 'allIndiarg'
             backendAzureRmStorageAccountName: 'allindiasa'
             backendAzureRmContainerName: 'kuchbhicontainer'
-            backendAzureRmKey: 'ashu.tfstate'
+            backendAzureRmKey: 'ashu1.tfstate'
         - task: TerraformTask@5
           displayName: terraform plan
           inputs:
             provider: 'azurerm'
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
-            commandOptions: 'commandOptions: ''-refresh=false -parallelism=10'''
             environmentServiceNameAzureRM: 'pipeline_new_infra'
 
   - stage: stage4
