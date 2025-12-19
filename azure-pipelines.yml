@@ -1,0 +1,158 @@
+trigger:
+  branches:
+    include:
+      - none
+
+pool: pipepool
+
+stages:
+  - stage: stage1
+    displayName: install_init_fmt_validate 
+    jobs:
+      - job: terraoforminstall_terraforminit
+        displayName: terraform_install_init
+        steps:
+        - task: TerraformInstaller@1
+          displayName: terraform install
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTask@5
+          displayName: terraform init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            backendServiceArm: 'pipeline_new_infra'
+            backendAzureRmOverrideSubscriptionID: '009fad33-c09c-4841-af38-57dd79870d40'
+            backendAzureRmResourceGroupName: 'allIndiarg'
+            backendAzureRmStorageAccountName: 'allindiasa'
+            backendAzureRmContainerName: 'kuchbhicontainer'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
+
+      - job: terraformfmt_terrraformvalidate
+        displayName: terraform fmt and validate
+        dependsOn: terraoforminstall_terraforminit
+        steps:
+        - task: TerraformTask@5
+          displayName: terraform init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            backendAzureRmUseEntraIdForAuthentication: false
+            backendServiceArm: 'pipeline_new_infra'
+            backendAzureRmOverrideSubscriptionID: '009fad33-c09c-4841-af38-57dd79870d40'
+            backendAzureRmResourceGroupName: 'allIndiarg'
+            backendAzureRmStorageAccountName: 'allindiasa'
+            backendAzureRmContainerName: 'kuchbhicontainer'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
+
+        - task: TerraformTask@5
+          displayName: terraform fmt
+          inputs:
+            provider: 'azurerm'
+            command: 'custom'
+            commandOptions: 'fmt -recursive'
+            outputTo: 'console'
+            environmentServiceNameAzureRM: 'pipeline_new_infra'
+        - task: TerraformTask@5
+          displayName: terraform validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+
+  - stage: stage2
+    displayName: Security_scanning
+    # dependsOn: stage1
+    jobs:
+      - job: terraform_scanning
+        displayName: "Terraform Security Scanning"
+        steps:
+        - task: tfsec@1
+          displayName: Security Scanning
+          inputs:
+            version: 'v1.26.0'
+            dir: '$(System.DefaultWorkingDirectory)'
+        
+        - task: PowerShell@2
+          inputs:
+            targetType: 'inline'
+            script: |
+              tflint --init
+              tflint
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - stage: stage3
+    displayName: terraform plan
+    # dependsOn:stage2
+    jobs:
+      - job: terraform_plan
+        displayName: terraform plan
+        steps:
+        - task: TerraformTask@5
+          displayName: terraform init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            backendAzureRmUseEntraIdForAuthentication: false
+            backendServiceArm: 'pipeline_new_infra'
+            backendAzureRmOverrideSubscriptionID: '009fad33-c09c-4841-af38-57dd79870d40'
+            backendAzureRmResourceGroupName: 'allIndiarg'
+            backendAzureRmStorageAccountName: 'allindiasa'
+            backendAzureRmContainerName: 'kuchbhicontainer'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
+        - task: TerraformTask@5
+          displayName: terraform plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            commandOptions: 'commandOptions: ''-refresh=false -parallelism=10'''
+            environmentServiceNameAzureRM: 'pipeline_new_infra'
+
+  - stage: stage4
+    displayName: manualValidation
+    # dependsOn: stage3
+    jobs:
+      - job: manual_validation
+        displayName: manual validation
+        pool: server
+        steps:
+        - task: ManualValidation@1
+          inputs:
+            notifyUsers: 'anoopkushwaha509@gmail.com'
+            approvers: 'anoopkushwaha509@gmail.com'
+            instructions: 'check and approve'
+
+  - stage: stage5
+    displayName: terraformApply
+    # dependsOn: stage3
+    jobs:
+      - job: terraform_apply
+        displayName: terraformApply
+        steps:
+        - task: TerraformTask@5
+          displayName: terraform init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            backendAzureRmUseEntraIdForAuthentication: false
+            backendServiceArm: 'pipeline_new_infra'
+            backendAzureRmOverrideSubscriptionID: '009fad33-c09c-4841-af38-57dd79870d40'
+            backendAzureRmResourceGroupName: 'allIndiarg'
+            backendAzureRmStorageAccountName: 'allindiasa'
+            backendAzureRmContainerName: 'kuchbhicontainer'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
+        - task: TerraformTask@5
+          displayName: terraform apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            environmentServiceNameAzureRM: 'pipeline_new_infra'
+            environmentAzureRmOverrideSubscriptionID: '009fad33-c09c-4841-af38-57dd79870d40'
+
+
