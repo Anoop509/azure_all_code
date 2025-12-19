@@ -5,13 +5,13 @@ terraform {
       version = "4.47.0"
     }
   }
-  # backend "azurerm" {
+   backend "azurerm" {
   #   # resource_group_name  = "ajay01"
   #   # storage_account_name = "ajaystg04"
   #   # container_name       = "ajaycont"
   #   # key                  = "ajay.tfstate"
 
-  # }
+  }
 }
 
 provider "azurerm" {
