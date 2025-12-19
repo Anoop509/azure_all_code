@@ -7,7 +7,7 @@ pool: pipepool
 
 variables:
   TF_DIR: $(System.DefaultWorkingDirectory)/Envoirnment/Dev
-  TF_STATE: anoop-prod.tfstate
+  TF_STATE: anoop-final.tfstate
 
 stages:
 
@@ -23,16 +23,16 @@ stages:
       inputs:
         terraformVersion: 'latest'
 
-    # Init only for modules/providers (NO backend)
-    - script: terraform init -backend=false -input=false
-      displayName: Init (no backend)
+    # Modules + providers init (NO backend)
+    - script: terraform init -backend=false
+      displayName: Terraform init (no backend)
       workingDirectory: $(TF_DIR)
 
     - script: terraform fmt -recursive
       displayName: Terraform fmt
       workingDirectory: $(TF_DIR)
 
-    - script: terraform validate -input=false
+    - script: terraform validate
       displayName: Terraform validate
       workingDirectory: $(TF_DIR)
 
