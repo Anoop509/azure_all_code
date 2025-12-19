@@ -27,7 +27,7 @@ stages:
             backendAzureRmResourceGroupName: 'allIndiarg'
             backendAzureRmStorageAccountName: 'allindiasa'
             backendAzureRmContainerName: 'kuchbhicontainer'
-            backendAzureRmKey: 'anoopbhaika21.tfstate'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
 
       - job: terraformfmt_terrraformvalidate
         displayName: terraform fmt and validate
@@ -45,7 +45,7 @@ stages:
             backendAzureRmResourceGroupName: 'allIndiarg'
             backendAzureRmStorageAccountName: 'allindiasa'
             backendAzureRmContainerName: 'kuchbhicontainer'
-            backendAzureRmKey: 'anoopbhaika21.tfstate'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
 
         - task: TerraformTask@5
           displayName: terraform fmt
@@ -102,15 +102,15 @@ stages:
             backendAzureRmResourceGroupName: 'allIndiarg'
             backendAzureRmStorageAccountName: 'allindiasa'
             backendAzureRmContainerName: 'kuchbhicontainer'
-            backendAzureRmKey: 'anoopbhaika21.tfstate'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
         - task: TerraformTask@5
           displayName: terraform plan
           inputs:
             provider: 'azurerm'
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev/'
+            commandOptions: 'commandOptions: ''-refresh=false -parallelism=10'''
             environmentServiceNameAzureRM: 'pipeline_new_infra'
-			commandOptions: '-refresh=false -parallelism=10'
 
   - stage: stage4
     displayName: manualValidation
@@ -145,7 +145,7 @@ stages:
             backendAzureRmResourceGroupName: 'allIndiarg'
             backendAzureRmStorageAccountName: 'allindiasa'
             backendAzureRmContainerName: 'kuchbhicontainer'
-            backendAzureRmKey: 'anoopbhaika21.tfstate'
+            backendAzureRmKey: 'anoopbhaika11.tfstate'
         - task: TerraformTask@5
           displayName: terraform apply
           inputs:
