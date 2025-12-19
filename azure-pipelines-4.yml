@@ -1,0 +1,98 @@
+trigger:
+  branches:
+    include:
+      - none
+
+pool: pipepool
+
+variables:
+  TF_DIR: '$(System.DefaultWorkingDirectory)/Envoirnment/Dev'
+  TF_STATE: 'anoop-clean.tfstate'   # 🔥 NEW TFSTATE
+
+# ---------------- STAGE 1 ----------------
+- stage: validate
+  displayName: Terraform Validate
+  jobs:
+  - job: validate
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: 'latest'
+
+    - script: terraform init -backend=false
+      workingDirectory: $(TF_DIR)
+
+    - script: terraform fmt -recursive
+      workingDirectory: $(TF_DIR)
+
+    - script: terraform validate
+      workingDirectory: $(TF_DIR)
+
+# ---------------- STAGE 2 ----------------
+- stage: plan
+  displayName: Terraform Plan
+  dependsOn: validate
+  jobs:
+  - job: plan
+    steps:
+    - task: TerraformTask@5
+      displayName: terraform init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: $(TF_DIR)
+        backendServiceArm: 'pipeline_new_infra'
+        backendAzureRmResourceGroupName: 'allIndiarg'
+        backendAzureRmStorageAccountName: 'allindiasa'
+        backendAzureRmContainerName: 'kuchbhicontainer'
+        backendAzureRmKey: 'anoop-clean.tfstate'
+
+    - task: TerraformTask@5
+      displayName: terraform plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        commandOptions: '-refresh=false -parallelism=5'
+        workingDirectory: $(TF_DIR)
+        environmentServiceNameAzureRM: 'pipeline_new_infra'
+
+# ---------------- STAGE 3 ----------------
+- stage: approval
+  displayName: Manual Approval
+  dependsOn: plan
+  jobs:
+  - job: approval
+    pool: server
+    steps:
+    - task: ManualValidation@1
+      inputs:
+        notifyUsers: 'anoopkushwaha509@gmail.com'
+        instructions: 'Approve Terraform Apply'
+
+# ---------------- STAGE 4 ----------------
+- stage: apply
+  displayName: Terraform Apply
+  dependsOn: approval
+  jobs:
+  - job: apply
+    steps:
+    - task: TerraformTask@5
+      displayName: terraform init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: $(TF_DIR)
+        backendServiceArm: 'pipeline_new_infra'
+        backendAzureRmResourceGroupName: 'allIndiarg'
+        backendAzureRmStorageAccountName: 'allindiasa'
+        backendAzureRmContainerName: 'kuchbhicontainer'
+        backendAzureRmKey: 'anoop-clean.tfstate'
+
+    - task: TerraformTask@5
+      displayName: terraform apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        commandOptions: '-auto-approve'
+        workingDirectory: $(TF_DIR)
+        environmentServiceNameAzureRM: 'pipeline_new_infra'
